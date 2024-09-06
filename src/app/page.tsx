@@ -177,7 +177,7 @@ export default function Home() {
         <p>
           Open source on {' '}
           <a 
-            href="https://github.com/yourusername/solana-token-list" 
+            href="https://github.com/vulalabs/memecoinvote.git" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
