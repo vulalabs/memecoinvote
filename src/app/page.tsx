@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, doc, onSnapshot, setDoc, increment } from 'firebase/firestore';
 import { db } from './firebase-config'; // Adjust the path if necessary
+import { Github } from 'lucide-react';
 
 interface JupiterToken {
   address: string;
@@ -54,36 +55,34 @@ const TokenLogo: React.FC<{ src: string, alt: string }> = ({ src, alt }) => {
 
 const TokenRow: React.FC<TokenRowProps> = ({ token, onLike, onDislike }) => {
   return (
-    <tr className="border-b">
-      <td className="py-2 px-4 w-16">
-        <TokenLogo src={token.logoURI} alt={`${token.name} logo`} />
-      </td>
-      <td className="py-2 px-4">
-        <div>{token.name}</div>
+    <div className="flex items-center p-4 border-b">
+      <TokenLogo src={token.logoURI} alt={`${token.name} logo`} />
+      <div className="ml-4 flex-grow">
+        <div className="font-semibold">{token.name}</div>
         <a
           href={`https://birdeye.so/token/${token.address}?chain=solana`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-blue-500 hover:underline"
+          className="text-xs text-blue-500 hover:underline"
         >
           {token.address.slice(0, 4)}...{token.address.slice(-4)}
         </a>
-      </td>
-      <td className="py-2 px-4 text-center">
+      </div>
+      <div className="flex space-x-2">
         <button 
           onClick={() => onLike(token.address)} 
-          className="bg-green-500 text-white px-2 py-1 rounded mr-2"
+          className="bg-green-500 text-white px-3 py-1 rounded-full text-sm"
         >
-          Like ({token.likes})
+          👍 {token.likes}
         </button>
         <button 
           onClick={() => onDislike(token.address)} 
-          className="bg-red-500 text-white px-2 py-1 rounded"
+          className="bg-red-500 text-white px-3 py-1 rounded-full text-sm"
         >
-          Dislike ({token.dislikes})
+          👎 {token.dislikes}
         </button>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };
 
@@ -172,26 +171,19 @@ export default function Home() {
     .sort((a, b) => b.likes - a.likes);
 
   return (
-    <div className="min-h-screen p-8 font-sans flex flex-col">
-      <footer className="absolute top-4 right-4 text-right text-sm text-gray-600 max-w-xs">
-        <p>
-          Open source on {' '}
+    <div className="min-h-screen p-4 font-sans flex flex-col">
+      <main className="max-w-lg mx-auto w-full flex-grow">
+        <h1 className="text-2xl font-bold mb-4 text-center">Solana Token List</h1>
+        <p className="mb-4 text-sm text-gray-600 flex items-center justify-center">
+          Like or dislike tokens to share your opinion! 
           <a 
             href="https://github.com/vulalabs/memecoinvote.git" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
+            className="ml-2 text-blue-500 hover:text-blue-600"
           >
-            GitHub
+            <Github size={16} />
           </a>
-          .
-        </p>
-      </footer>
-
-      <main className="max-w-4xl mx-auto flex-grow">
-        <h1 className="text-3xl text-center font-bold mb-6">Solana Token List</h1>
-        <p className="mb-4 text-sm text-gray-600">
-          Like or dislike tokens to share your opinion!
         </p>
 
         <div className="mb-4">
@@ -200,7 +192,7 @@ export default function Home() {
             placeholder="Search by name or address"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -209,30 +201,19 @@ export default function Home() {
             <p>Loading...</p>
           </div>
         ) : (
-          <>
-            <table className="w-full border-collapse border">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="py-2 px-4 text-left">Logo</th>
-                  <th className="py-2 px-4 text-left">Token Name & Address</th>
-                  <th className="py-2 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAndSortedTokens.map((token) => (
-                  <TokenRow 
-                    key={token.address} 
-                    token={token} 
-                    onLike={handleLike} 
-                    onDislike={handleDislike}
-                  />
-                ))}
-              </tbody>
-            </table>
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            {filteredAndSortedTokens.map((token) => (
+              <TokenRow 
+                key={token.address} 
+                token={token} 
+                onLike={handleLike} 
+                onDislike={handleDislike}
+              />
+            ))}
             {filteredAndSortedTokens.length === 0 && (
-              <p className="text-center mt-4 text-gray-600">No tokens found matching your search.</p>
+              <p className="text-center py-4 text-gray-600">No tokens found matching your search.</p>
             )}
-          </>
+          </div>
         )}
       </main>
     </div>
